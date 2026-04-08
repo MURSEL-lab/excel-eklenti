@@ -11,16 +11,12 @@
         body { margin: 0; padding: 15px; font-family: 'Segoe UI', sans-serif; background-color: #f3f2f1; }
         h2 { font-size: 18px; font-weight: 600; color: #217346; margin-bottom: 10px; text-align: center; }
         #status { font-size: 12px; font-weight: 700; margin-bottom: 15px; text-align: center; min-height: 15px; }
-        
-        /* Kart Yapısı */
         .sheet-card { background: white; padding: 12px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 15px; border-top: 4px solid #ccc; }
         .card-1 { border-top-color: #217346; }
         .card-2 { border-top-color: #0078d4; }
-
         .ms-Button { padding: 10px; color: #fff; border: none; border-radius: 4px; cursor: pointer; width: 100%; font-weight: 600; margin-bottom: 10px; }
         #btn-1 { background-color: #217346; }
         #btn-2 { background-color: #0078d4; }
-
         .update-controls { padding-top: 8px; border-top: 1px solid #eee; }
         .row { display: flex; align-items: center; margin-bottom: 6px; }
         label { font-size: 13px; font-weight: 600; cursor: pointer; }
@@ -33,11 +29,11 @@
     <div id="status" style="color: #0078d4;">Hazır</div>
 
     <div class="sheet-card card-1">
-        <button id="btn-1" class="ms-Button">Sheet 1 Verilerini Getir</button>
+        <button id="btn-1" class="ms-Button">Sheets Yahoo</button>
         <div class="update-controls">
             <div class="row">
                 <input type="checkbox" id="auto-update-cb-1" style="margin-right:8px;">
-                <label for="auto-update-cb-1">Otomatik Güncelle (S1)</label>
+                <label for="auto-update-cb-1">Otomatik Güncelle (Yahoo)</label>
             </div>
             <select id="interval-select-1">
                 <option value="900000">15 Dakika</option>
@@ -49,11 +45,11 @@
     </div>
 
     <div class="sheet-card card-2">
-        <button id="btn-2" class="ms-Button">Sheet 2 Verilerini Getir</button>
+        <button id="btn-2" class="ms-Button">Sheets GoogleFinans</button>
         <div class="update-controls">
             <div class="row">
                 <input type="checkbox" id="auto-update-cb-2" style="margin-right:8px;">
-                <label for="auto-update-cb-2">Otomatik Güncelle (S2)</label>
+                <label for="auto-update-cb-2">Otomatik Güncelle (Finans)</label>
             </div>
             <select id="interval-select-2">
                 <option value="900000">15 Dakika</option>
