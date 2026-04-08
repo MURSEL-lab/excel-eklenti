@@ -4,20 +4,25 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Sheet Aktar v3</title>
+    <title>Sheet Aktar v4</title>
 
     <script type="text/javascript" src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
-    
     <link rel="stylesheet" href="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-core/11.0.0/css/fabric.min.css" />
 
     <style>
         body { margin: 0; padding: 15px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #fff; }
         h2 { font-size: 20px; font-weight: 600; margin-bottom: 15px; color: #217346; }
-        #status { font-size: 13px; font-weight: 700; margin-bottom: 10px; color: #0078d4; }
-        #run-button { padding: 12px 20px; background-color: #217346; color: #fff; border: none; border-radius: 4px; cursor: pointer; width: 100%; font-size: 14px; font-weight: 500; transition: background-color .2s; }
+        #status { font-size: 13px; font-weight: 700; margin-bottom: 10px; color: #0078d4; min-height: 18px; }
+        .button-group { display: flex; flex-direction: column; gap: 10px; }
+        .ms-Button { padding: 12px 20px; color: #fff; border: none; border-radius: 4px; cursor: pointer; width: 100%; font-size: 14px; font-weight: 500; transition: background-color .2s; }
+        #run-button { background-color: #217346; }
         #run-button:hover { background-color: #1a5a37; }
+        #run-button-2 { background-color: #0078d4; }
+        #run-button-2:hover { background-color: #005a9e; }
         .update-container { margin-top: 20px; padding: 15px; border: 1px solid #e0e0e0; background-color: #fcfcfc; border-radius: 4px; }
-        .checkbox-row { display: flex; align-items: center; }
+        .checkbox-row { display: flex; align-items: center; margin-bottom: 10px; }
+        .select-row { margin-left: 24px; margin-top: 5px; }
+        select { padding: 5px; border-radius: 4px; border: 1px solid #ccc; width: 100%; font-size: 13px; }
         input[type=checkbox] { margin-right: 10px; cursor: pointer; }
         label { font-size: 14px; font-weight: 600; cursor: pointer; }
         .timer-info { font-size: 11px; color: #888; margin-top: 5px; margin-left: 24px; }
@@ -26,23 +31,35 @@
 
 <body class="ms-font-m">
     <div>
-        <h2>Sheet Aktar v3</h2>
+        <h2>Sheet Aktar v4</h2>
         <div id="status">Durum: Office Başlatılıyor...</div>
         
-        <button id="run-button" class="ms-Button">
-            <span class="ms-Button-label">Verileri Şimdi Getir</span>
-        </button>
+        <div class="button-group">
+            <button id="run-button" class="ms-Button">
+                <span class="ms-Button-label">Sheet 1 Verilerini Getir</span>
+            </button>
+            <button id="run-button-2" class="ms-Button">
+                <span class="ms-Button-label">Sheet 2 Verilerini Getir</span>
+            </button>
+        </div>
 
         <div class="update-container">
             <div class="checkbox-row">
                 <input type="checkbox" id="auto-update-cb"> 
                 <label for="auto-update-cb">Otomatik Güncelle</label>
             </div>
-            <div id="timer-text" class="timer-info">Kapalı (İşaretlendiğinde 5 dk'da bir yeniler)</div>
+            
+            <div class="select-row">
+                <select id="interval-select">
+                    <option value="900000">15 Dakika</option>
+                    <option value="1800000">30 Dakika</option>
+                    <option value="3600000">1 Saat</option>
+                </select>
+            </div>
+            <div id="timer-text" class="timer-info">Kapalı (Seçilen sürede bir yeniler)</div>
         </div>
     </div>
 
-    <script src="polyfill.js"></script>
     <script src="taskpane.js"></script>
 </body>
 </html>
