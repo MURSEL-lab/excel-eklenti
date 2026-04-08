@@ -1,4 +1,6 @@
-let updateInterval;
+let updateInterval1;
+let updateInterval2;
+
 const API_URL_1 = "https://script.google.com/macros/s/AKfycbxULPYNOZv_ZrY81RL-YJ14LJcd5MMPUPU6Esc7eQer9w3s16m1hh7h6jUk13_zy1Y/exec";
 const API_URL_2 = "https://script.google.com/macros/s/AKfycbzEDVFJ7mwPB5acuZWo4uuphMGMP3YyRzLw3gIM61T6Y0tvngkAKdpcD_7Tyz1Nj8dO/exec";
 
@@ -8,18 +10,21 @@ Office.onReady((info) => {
         document.getElementById("btn-1").onclick = () => fetchData(API_URL_1, "GoogleVerileri");
         document.getElementById("btn-2").onclick = () => fetchData(API_URL_2, "GoogleVerileri2");
 
-        // Zamanlayıcı Ayarları
-        document.getElementById("auto-update-cb").onchange = handleTimer;
-        document.getElementById("interval-select").onchange = handleTimer;
+        // Sheet 1 Zamanlayıcı Dinleyicileri
+        document.getElementById("auto-update-cb-1").onchange = () => handleTimer(1);
+        document.getElementById("interval-select-1").onchange = () => handleTimer(1);
+
+        // Sheet 2 Zamanlayıcı Dinleyicileri
+        document.getElementById("auto-update-cb-2").onchange = () => handleTimer(2);
+        document.getElementById("interval-select-2").onchange = () => handleTimer(2);
     }
 });
 
 async function fetchData(url, sheetName) {
     const status = document.getElementById("status");
     try {
-        status.innerText = `Durum: ${sheetName} senkronize ediliyor...`;
-        status.style.color = "blue";
-
+        status.innerText = `İşlem: ${sheetName} güncelleniyor...`;
+        
         const response = await fetch(url);
         const data = await response.json();
 
@@ -33,46 +38,50 @@ async function fetchData(url, sheetName) {
             }
 
             sheet.getUsedRange().clear(Excel.ClearApplyTo.contents);
-            
-            const rowCount = data.length;
-            const colCount = data[0].length;
-            const range = sheet.getRangeByIndexes(0, 0, rowCount, colCount);
-            
+            const range = sheet.getRangeByIndexes(0, 0, data.length, data[0].length);
             range.values = data;
             range.format.autofitColumns();
             
             await context.sync();
         });
 
-        status.innerText = `Son Güncelleme: ${new Date().toLocaleTimeString()}`;
-        status.style.color = "green";
+        status.innerText = `Son Başarılı Güncelleme: ${new Date().toLocaleTimeString()}`;
+        status.style.color = "#217346";
     } catch (error) {
-        console.error(error);
-        status.innerText = "Hata: Veri çekilemedi!";
-        status.style.color = "red";
+        status.innerText = "Hata: Bağlantı kurulamadı!";
+        status.style.color = "#a4262c";
     }
 }
 
-function handleTimer() {
-    const isChecked = document.getElementById("auto-update-cb").checked;
-    const intervalMs = parseInt(document.getElementById("interval-select").value);
-    const timerText = document.getElementById("timer-text");
+function handleTimer(id) {
+    const isChecked = document.getElementById(`auto-update-cb-${id}`).checked;
+    const intervalMs = parseInt(document.getElementById(`interval-select-${id}`).value);
+    const timerText = document.getElementById(`timer-text-${id}`);
+    const targetUrl = id === 1 ? API_URL_1 : API_URL_2;
+    const targetSheet = id === 1 ? "GoogleVerileri" : "GoogleVerileri2";
 
-    clearInterval(updateInterval);
+    // İlgili zamanlayıcıyı temizle
+    if (id === 1) clearInterval(updateInterval1);
+    else clearInterval(updateInterval2);
 
     if (isChecked) {
         const mins = intervalMs / 60000;
-        timerText.innerText = `Aktif: ${mins} dk'da bir yenileniyor...`;
-        timerText.style.color = "green";
+        timerText.innerText = `Aktif: ${mins} dk'da bir yenileniyor.`;
+        timerText.style.color = "#217346";
         
-        // İlk veriyi hemen çek, sonra periyoda başla
-        fetchData(API_URL_1, "GoogleVerileri");
+        // İlk çalıştır
+        fetchData(targetUrl, targetSheet);
         
-        updateInterval = setInterval(() => {
-            fetchData(API_URL_1, "GoogleVerileri");
+        // Periyodu başlat
+        const interval = setInterval(() => {
+            fetchData(targetUrl, targetSheet);
         }, intervalMs);
+
+        // Değişkeni kaydet
+        if (id === 1) updateInterval1 = interval;
+        else updateInterval2 = interval;
     } else {
         timerText.innerText = "Zamanlayıcı Kapalı";
-        timerText.style.color = "#666";
+        timerText.style.color = "#888";
     }
 }
