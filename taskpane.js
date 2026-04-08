@@ -6,15 +6,12 @@ const API_URL_2 = "https://script.google.com/macros/s/AKfycbzEDVFJ7mwPB5acuZWo4u
 
 Office.onReady((info) => {
     if (info.host === Office.HostType.Excel) {
-        // Buton Tıklamaları
-        document.getElementById("btn-1").onclick = () => fetchData(API_URL_1, "GoogleVerileri");
-        document.getElementById("btn-2").onclick = () => fetchData(API_URL_2, "GoogleVerileri2");
+        document.getElementById("btn-1").onclick = () => fetchData(API_URL_1, "YahooVerileri");
+        document.getElementById("btn-2").onclick = () => fetchData(API_URL_2, "FinansVerileri");
 
-        // Sheet 1 Zamanlayıcı Dinleyicileri
         document.getElementById("auto-update-cb-1").onchange = () => handleTimer(1);
         document.getElementById("interval-select-1").onchange = () => handleTimer(1);
 
-        // Sheet 2 Zamanlayıcı Dinleyicileri
         document.getElementById("auto-update-cb-2").onchange = () => handleTimer(2);
         document.getElementById("interval-select-2").onchange = () => handleTimer(2);
     }
@@ -45,7 +42,7 @@ async function fetchData(url, sheetName) {
             await context.sync();
         });
 
-        status.innerText = `Son Başarılı Güncelleme: ${new Date().toLocaleTimeString()}`;
+        status.innerText = `Son Güncelleme: ${new Date().toLocaleTimeString()} (${sheetName})`;
         status.style.color = "#217346";
     } catch (error) {
         status.innerText = "Hata: Bağlantı kurulamadı!";
@@ -58,9 +55,8 @@ function handleTimer(id) {
     const intervalMs = parseInt(document.getElementById(`interval-select-${id}`).value);
     const timerText = document.getElementById(`timer-text-${id}`);
     const targetUrl = id === 1 ? API_URL_1 : API_URL_2;
-    const targetSheet = id === 1 ? "GoogleVerileri" : "GoogleVerileri2";
+    const targetSheet = id === 1 ? "YahooVerileri" : "FinansVerileri";
 
-    // İlgili zamanlayıcıyı temizle
     if (id === 1) clearInterval(updateInterval1);
     else clearInterval(updateInterval2);
 
@@ -69,15 +65,12 @@ function handleTimer(id) {
         timerText.innerText = `Aktif: ${mins} dk'da bir yenileniyor.`;
         timerText.style.color = "#217346";
         
-        // İlk çalıştır
         fetchData(targetUrl, targetSheet);
         
-        // Periyodu başlat
         const interval = setInterval(() => {
             fetchData(targetUrl, targetSheet);
         }, intervalMs);
 
-        // Değişkeni kaydet
         if (id === 1) updateInterval1 = interval;
         else updateInterval2 = interval;
     } else {
