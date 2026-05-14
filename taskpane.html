@@ -12,19 +12,26 @@
         h2 { font-size: 18px; font-weight: 600; color: #217346; margin-bottom: 10px; text-align: center; }
         #status { font-size: 12px; font-weight: 700; margin-bottom: 15px; text-align: center; min-height: 15px; }
         
-        .sheet-card { background: white; padding: 12px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 15px; border-top: 4px solid #ccc; }
+        /* Yan yana dizilim için yeni flex kapsayıcı */
+        .card-row { display: flex; gap: 10px; margin-bottom: 15px; }
+
+        /* Kartların genişliği paylaşması için flex: 1 eklendi ve margin-bottom kaldırıldı */
+        .sheet-card { background: white; padding: 12px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); border-top: 4px solid #ccc; flex: 1; }
+        
         .card-1 { border-top-color: #217346; } 
         .card-2 { border-top-color: #0078d4; } 
         .card-3 { border-top-color: #5c2d91; } 
+        .card-4 { border-top-color: #d83b01; } /* 4. Kart için yeni renk (Turuncu) */
         
-        .ms-Button { padding: 10px; color: #fff; border: none; border-radius: 4px; cursor: pointer; width: 100%; font-weight: 600; margin-bottom: 10px; }
+        .ms-Button { padding: 10px; color: #fff; border: none; border-radius: 4px; cursor: pointer; width: 100%; font-weight: 600; margin-bottom: 10px; font-size: 12px;}
         #btn-1 { background-color: #217346; }
         #btn-2 { background-color: #0078d4; }
         #btn-3 { background-color: #5c2d91; }
+        #btn-4 { background-color: #d83b01; } /* 4. Kart Buton Rengi */
         
         .update-controls { padding-top: 8px; border-top: 1px solid #eee; }
         .row { display: flex; align-items: center; margin-bottom: 6px; }
-        label { font-size: 13px; font-weight: 600; cursor: pointer; }
+        label { font-size: 12px; font-weight: 600; cursor: pointer; }
         select { width: 100%; padding: 5px; border-radius: 4px; border: 1px solid #ddd; font-size: 12px; }
         .timer-info { font-size: 10px; color: #888; margin-top: 4px; }
     </style>
@@ -33,57 +40,81 @@
     <h2>Sheet Aktar v4</h2>
     <div id="status" style="color: #0078d4;">Hazır</div>
 
-    <!-- 1. KART: Sheets Yahoo -->
-    <div class="sheet-card card-1">
-        <button id="btn-1" class="ms-Button">Sheets Yahoo</button>
-        <div class="update-controls">
-            <div class="row">
-                <input type="checkbox" id="auto-update-cb-1" style="margin-right:8px;">
-                <label for="auto-update-cb-1">Otomatik Güncelle (Yahoo)</label>
+    <!-- 1. SATIR: Yahoo ve Google Finans Yan Yana -->
+    <div class="card-row">
+        <!-- 1. KART: Sheets Yahoo -->
+        <div class="sheet-card card-1">
+            <button id="btn-1" class="ms-Button">SHEETS YAHOO CANLI FİYAT</button>
+            <div class="update-controls">
+                <div class="row">
+                    <input type="checkbox" id="auto-update-cb-1" style="margin-right:8px;">
+                    <label for="auto-update-cb-1">Otomatik Güncelle (Yahoo)</label>
+                </div>
+                <select id="interval-select-1">
+                    <option value="900000">15 Dakika</option>
+                    <option value="1800000">30 Dakika</option>
+                    <option value="3600000">1 Saat</option>
+                    <option value="86400000">1 Gün</option>
+                </select>
+                <div id="timer-text-1" class="timer-info">Zamanlayıcı Kapalı</div>
             </div>
-            <select id="interval-select-1">
-                <option value="900000">15 Dakika</option>
-                <option value="1800000">30 Dakika</option>
-                <option value="3600000">1 Saat</option>
-                <option value="86400000">1 Gün</option>
-            </select>
-            <div id="timer-text-1" class="timer-info">Zamanlayıcı Kapalı</div>
+        </div>
+
+        <!-- 2. KART: Sheets GoogleFinans -->
+        <div class="sheet-card card-2">
+            <button id="btn-2" class="ms-Button">SHEETS GOOGLE FİNANS CANLI FİYAT</button>
+            <div class="update-controls">
+                <div class="row">
+                    <input type="checkbox" id="auto-update-cb-2" style="margin-right:8px;">
+                    <label for="auto-update-cb-2">Otomatik Güncelle (Finans)</label>
+                </div>
+                <select id="interval-select-2">
+                    <option value="900000">15 Dakika</option>
+                    <option value="1800000">30 Dakika</option>
+                    <option value="3600000">1 Saat</option>
+                    <option value="86400000">1 Gün</option>
+                </select>
+                <div id="timer-text-2" class="timer-info">Zamanlayıcı Kapalı</div>
+            </div>
         </div>
     </div>
 
-    <!-- 2. KART: Sheets GoogleFinans -->
-    <div class="sheet-card card-2">
-        <button id="btn-2" class="ms-Button">Sheets GoogleFinans</button>
-        <div class="update-controls">
-            <div class="row">
-                <input type="checkbox" id="auto-update-cb-2" style="margin-right:8px;">
-                <label for="auto-update-cb-2">Otomatik Güncelle (Finans)</label>
+    <!-- 2. SATIR: Kapanış 300 Gün ve Kapanış 1500 Gün Yan Yana -->
+    <div class="card-row">
+        <!-- 3. KART: Sheets Kapanış 300 Gün -->
+        <div class="sheet-card card-3">
+            <button id="btn-3" class="ms-Button">SHEETS KAPANIŞ 300 GÜN</button>
+            <div class="update-controls">
+                <div class="row">
+                    <input type="checkbox" id="auto-update-cb-3" style="margin-right:8px;">
+                    <label for="auto-update-cb-3">Otomatik Güncelle (300 Gün)</label>
+                </div>
+                <select id="interval-select-3">
+                    <option value="900000">15 Dakika</option>
+                    <option value="1800000">30 Dakika</option>
+                    <option value="3600000">1 Saat</option>
+                    <option value="86400000">1 Gün</option>
+                </select>
+                <div id="timer-text-3" class="timer-info">Zamanlayıcı Kapalı</div>
             </div>
-            <select id="interval-select-2">
-                <option value="900000">15 Dakika</option>
-                <option value="1800000">30 Dakika</option>
-                <option value="3600000">1 Saat</option>
-                <option value="86400000">1 Gün</option>
-            </select>
-            <div id="timer-text-2" class="timer-info">Zamanlayıcı Kapalı</div>
         </div>
-    </div>
 
-    <!-- 3. KART: Sheets Portföy (18 Sayfa) -->
-    <div class="sheet-card card-3">
-        <button id="btn-3" class="ms-Button">Sheets Portföy (18 Sayfa)</button>
-        <div class="update-controls">
-            <div class="row">
-                <input type="checkbox" id="auto-update-cb-3" style="margin-right:8px;">
-                <label for="auto-update-cb-3">Otomatik Güncelle (Portföy)</label>
+        <!-- 4. KART: Sheets Kapanış 1500 Gün (YENİ) -->
+        <div class="sheet-card card-4">
+            <button id="btn-4" class="ms-Button">SHEETS KAPANIŞ 1500 GÜN</button>
+            <div class="update-controls">
+                <div class="row">
+                    <input type="checkbox" id="auto-update-cb-4" style="margin-right:8px;">
+                    <label for="auto-update-cb-4">Otomatik Güncelle (1500 Gün)</label>
+                </div>
+                <select id="interval-select-4">
+                    <option value="900000">15 Dakika</option>
+                    <option value="1800000">30 Dakika</option>
+                    <option value="3600000">1 Saat</option>
+                    <option value="86400000">1 Gün</option>
+                </select>
+                <div id="timer-text-4" class="timer-info">Zamanlayıcı Kapalı</div>
             </div>
-            <select id="interval-select-3">
-                <option value="900000">15 Dakika</option>
-                <option value="1800000">30 Dakika</option>
-                <option value="3600000">1 Saat</option>
-                <option value="86400000">1 Gün</option>
-            </select>
-            <div id="timer-text-3" class="timer-info">Zamanlayıcı Kapalı</div>
         </div>
     </div>
 
