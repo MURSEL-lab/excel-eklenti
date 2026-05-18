@@ -21,13 +21,15 @@
         .card-1 { border-top-color: #217346; } 
         .card-2 { border-top-color: #0078d4; } 
         .card-3 { border-top-color: #5c2d91; } 
-        .card-4 { border-top-color: #d83b01; } /* 4. Kart için yeni renk (Turuncu) */
+        .card-4 { border-top-color: #d83b01; } 
+        .card-5 { border-top-color: #00828a; } /* 5. Kart için yeni renk (Teal) */
         
         .ms-Button { padding: 10px; color: #fff; border: none; border-radius: 4px; cursor: pointer; width: 100%; font-weight: 600; margin-bottom: 10px; font-size: 12px;}
         #btn-1 { background-color: #217346; }
         #btn-2 { background-color: #0078d4; }
         #btn-3 { background-color: #5c2d91; }
-        #btn-4 { background-color: #d83b01; } /* 4. Kart Buton Rengi */
+        #btn-4 { background-color: #d83b01; } 
+        #btn-5 { background-color: #00828a; } /* 5. Kart Buton Rengi */
         
         .update-controls { padding-top: 8px; border-top: 1px solid #eee; }
         .row { display: flex; align-items: center; margin-bottom: 6px; }
@@ -40,9 +42,7 @@
     <h2>Sheet Aktar v4</h2>
     <div id="status" style="color: #0078d4;">Hazır</div>
 
-    <!-- 1. SATIR: Yahoo ve Google Finans Yan Yana -->
     <div class="card-row">
-        <!-- 1. KART: Sheets Yahoo -->
         <div class="sheet-card card-1">
             <button id="btn-1" class="ms-Button">SHEETS YAHOO CANLI FİYAT</button>
             <div class="update-controls">
@@ -60,7 +60,6 @@
             </div>
         </div>
 
-        <!-- 2. KART: Sheets GoogleFinans -->
         <div class="sheet-card card-2">
             <button id="btn-2" class="ms-Button">SHEETS GOOGLE FİNANS CANLI FİYAT</button>
             <div class="update-controls">
@@ -79,9 +78,7 @@
         </div>
     </div>
 
-    <!-- 2. SATIR: Kapanış 300 Gün ve Kapanış 1500 Gün Yan Yana -->
     <div class="card-row">
-        <!-- 3. KART: Sheets Kapanış 300 Gün -->
         <div class="sheet-card card-3">
             <button id="btn-3" class="ms-Button">SHEETS KAPANIŞ 300 GÜN</button>
             <div class="update-controls">
@@ -99,7 +96,6 @@
             </div>
         </div>
 
-        <!-- 4. KART: Sheets Kapanış 1500 Gün (YENİ) -->
         <div class="sheet-card card-4">
             <button id="btn-4" class="ms-Button">SHEETS KAPANIŞ 1500 GÜN</button>
             <div class="update-controls">
@@ -116,6 +112,26 @@
                 <div id="timer-text-4" class="timer-info">Zamanlayıcı Kapalı</div>
             </div>
         </div>
+    </div>
+
+    <div class="card-row">
+        <div class="sheet-card card-5">
+            <button id="btn-5" class="ms-Button">SHEETS HACİM 100 GÜN</button>
+            <div class="update-controls">
+                <div class="row">
+                    <input type="checkbox" id="auto-update-cb-5" style="margin-right:8px;">
+                    <label for="auto-update-cb-5">Otomatik Güncelle (Hacim 100)</label>
+                </div>
+                <select id="interval-select-5">
+                    <option value="900000">15 Dakika</option>
+                    <option value="1800000">30 Dakika</option>
+                    <option value="3600000">1 Saat</option>
+                    <option value="86400000">1 Gün</option>
+                </select>
+                <div id="timer-text-5" class="timer-info">Zamanlayıcı Kapalı</div>
+            </div>
+        </div>
+        <div style="flex: 1; visibility: hidden;"></div>
     </div>
 
     <script src="taskpane.js"></script>
