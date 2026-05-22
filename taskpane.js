@@ -11,8 +11,7 @@ const API_URL_3 = "https://script.google.com/macros/s/AKfycbyJ9r2ijTPYn_v_2kxzC-
 // GÜNCELLENEN YENİ URL: 5. Kart (Hacim 100 Gün)
 const API_URL_5 = "https://script.google.com/macros/s/AKfycbwWBZsq1L2S5LiZvhM02EWfhhVLkvxYUIC7Ar9U_jKfi0o-dhR7UK1PYE3CBJBwWirr/exec";
 
-// --- YENİ EKLENEN: Yahoo Canlı Fiyat Sayfaları ---
-// BURAYI KENDİ SAYFA İSİMLERİNE GÖRE DÜZENLE
+// --- GÖRSELDEKİ GERÇEK YAHOO SAYFA İSİMLERİ ---
 const YAHOO_SAYFALAR = ["Canli", "H1"];
 
 // 300 Gün için Sayfalar (P Serisi)
@@ -39,7 +38,7 @@ const HACIM_SAYFALAR = [
 Office.onReady((info) => {
     if (info.host === Office.HostType.Excel) {
         // Hata korumalı buton bağlamaları
-        safeBindClick("btn-1", () => fetchYahooData()); // YENİ FONKSİYONA BAĞLANDI
+        safeBindClick("btn-1", () => fetchYahooData()); 
         safeBindClick("btn-2", () => fetchData(API_URL_2, "FinansVerileri"));
         safeBindClick("btn-3", () => fetchPortfolioData()); 
         safeBindClick("btn-4", () => fetch1500GunData()); 
@@ -69,7 +68,7 @@ function safeBindChange(id, callback) {
     if (el) el.onchange = callback;
 }
 
-// 1. KART: YENİ Yahoo Canlı Fiyat Çoklu Sayfa Veri Çekme Fonksiyonu
+// 1. KART: Yahoo Canlı Fiyat Çoklu Sayfa Veri Çekme Fonksiyonu
 async function fetchYahooData() {
     const status = document.getElementById("status");
     try {
@@ -78,13 +77,19 @@ async function fetchYahooData() {
             status.style.color = "#217346"; 
         }
 
+        let basarisizSayfalar = [];
+
         await Excel.run(async (context) => {
             for (let sayfaAdi of YAHOO_SAYFALAR) {
                 let url = `${API_URL_1}?sayfaAdi=${sayfaAdi}`;
                 let response = await fetch(url);
                 let data = await response.json();
 
-                if (data.error || !data || data.length === 0) continue;
+                // Gelen veride hata varsa veya boşsa listeye ekle
+                if (data.error || !data || data.length === 0) {
+                    basarisizSayfalar.push(sayfaAdi);
+                    continue; 
+                }
 
                 const sheets = context.workbook.worksheets;
                 let sheet = sheets.getItemOrNullObject(sayfaAdi);
@@ -108,8 +113,13 @@ async function fetchYahooData() {
         });
 
         if (status) {
-            status.innerText = `Son Güncelleme: ${new Date().toLocaleTimeString()} (Yahoo Canlı Fiyat)`;
-            status.style.color = "#217346"; 
+            if (basarisizSayfalar.length > 0) {
+                status.innerText = `Hata: ${basarisizSayfalar.join(", ")} sayfası Google'dan çekilemedi! Web Uygulamasını güncelleyin.`;
+                status.style.color = "#a4262c"; 
+            } else {
+                status.innerText = `Son Güncelleme: ${new Date().toLocaleTimeString()} (Yahoo: Tüm Sayfalar)`;
+                status.style.color = "#217346"; 
+            }
         }
     } catch (error) {
         if (status) {
@@ -260,7 +270,6 @@ async function fetch1500GunData() {
     }
 }
 
-// 5. KART: Hacim 100 Gün Veri Çekme Fonksiyonu
 async function fetchHacimData() {
     const status = document.getElementById("status");
     try {
@@ -358,12 +367,12 @@ function handleTimer(id) {
             interval = setInterval(() => { fetchPortfolioData(); }, intervalMs);
             updateInterval3 = interval;
         } 
-        else if (id === 1) { // GÜNCELLENEN KISIM: Yahoo Zamanlayıcısı
+        else if (id === 1) { 
             fetchYahooData(); 
             interval = setInterval(() => { fetchYahooData(); }, intervalMs);
             updateInterval1 = interval;
         } 
-        else if (id === 2) { // GÜNCELLENEN KISIM: Finans Zamanlayıcısı
+        else if (id === 2) { 
             const targetUrl = API_URL_2;
             const targetSheet = "FinansVerileri";
             
