@@ -11,6 +11,10 @@ const API_URL_3 = "https://script.google.com/macros/s/AKfycbyJ9r2ijTPYn_v_2kxzC-
 // GÜNCELLENEN YENİ URL: 5. Kart (Hacim 100 Gün)
 const API_URL_5 = "https://script.google.com/macros/s/AKfycbwWBZsq1L2S5LiZvhM02EWfhhVLkvxYUIC7Ar9U_jKfi0o-dhR7UK1PYE3CBJBwWirr/exec";
 
+// --- YENİ EKLENEN: Yahoo Canlı Fiyat Sayfaları ---
+// BURAYI KENDİ SAYFA İSİMLERİNE GÖRE DÜZENLE
+const YAHOO_SAYFALAR = ["Canli", "H1"];
+
 // 300 Gün için Sayfalar (P Serisi)
 const SAYFALAR = [
     "KONTROL", "P1", "P2", "P3", "P4", "P5", "P6", "P7", "P8", 
@@ -35,7 +39,7 @@ const HACIM_SAYFALAR = [
 Office.onReady((info) => {
     if (info.host === Office.HostType.Excel) {
         // Hata korumalı buton bağlamaları
-        safeBindClick("btn-1", () => fetchData(API_URL_1, "YahooVerileri"));
+        safeBindClick("btn-1", () => fetchYahooData()); // YENİ FONKSİYONA BAĞLANDI
         safeBindClick("btn-2", () => fetchData(API_URL_2, "FinansVerileri"));
         safeBindClick("btn-3", () => fetchPortfolioData()); 
         safeBindClick("btn-4", () => fetch1500GunData()); 
@@ -65,6 +69,57 @@ function safeBindChange(id, callback) {
     if (el) el.onchange = callback;
 }
 
+// 1. KART: YENİ Yahoo Canlı Fiyat Çoklu Sayfa Veri Çekme Fonksiyonu
+async function fetchYahooData() {
+    const status = document.getElementById("status");
+    try {
+        if (status) {
+            status.innerText = `İşlem: Yahoo Canlı Fiyat güncelleniyor...`;
+            status.style.color = "#217346"; 
+        }
+
+        await Excel.run(async (context) => {
+            for (let sayfaAdi of YAHOO_SAYFALAR) {
+                let url = `${API_URL_1}?sayfaAdi=${sayfaAdi}`;
+                let response = await fetch(url);
+                let data = await response.json();
+
+                if (data.error || !data || data.length === 0) continue;
+
+                const sheets = context.workbook.worksheets;
+                let sheet = sheets.getItemOrNullObject(sayfaAdi);
+                await context.sync();
+
+                if (sheet.isNullObject) {
+                    sheet = sheets.add(sayfaAdi);
+                }
+
+                let usedRange = sheet.getUsedRangeOrNullObject();
+                await context.sync();
+                if (!usedRange.isNullObject) {
+                    usedRange.clear(Excel.ClearApplyTo.contents);
+                }
+
+                const range = sheet.getRangeByIndexes(0, 0, data.length, data[0].length);
+                range.values = data;
+                range.format.autofitColumns();
+            }
+            await context.sync();
+        });
+
+        if (status) {
+            status.innerText = `Son Güncelleme: ${new Date().toLocaleTimeString()} (Yahoo Canlı Fiyat)`;
+            status.style.color = "#217346"; 
+        }
+    } catch (error) {
+        if (status) {
+            status.innerText = "Hata: Yahoo Canlı Fiyat bağlantısı kurulamadı!";
+            status.style.color = "#a4262c";
+        }
+    }
+}
+
+// Orijinal tek sayfa veri çekme fonksiyonu (Sadece Finans için kaldı)
 async function fetchData(url, sheetName) {
     const status = document.getElementById("status");
     try {
@@ -97,7 +152,7 @@ async function fetchData(url, sheetName) {
 
         if (status) {
             status.innerText = `Son Güncelleme: ${new Date().toLocaleTimeString()} (${sheetName})`;
-            status.style.color = sheetName === "YahooVerileri" ? "#217346" : "#0078d4";
+            status.style.color = "#0078d4";
         }
     } catch (error) {
         if (status) {
@@ -303,15 +358,18 @@ function handleTimer(id) {
             interval = setInterval(() => { fetchPortfolioData(); }, intervalMs);
             updateInterval3 = interval;
         } 
-        else {
-            const targetUrl = id === 1 ? API_URL_1 : API_URL_2;
-            const targetSheet = id === 1 ? "YahooVerileri" : "FinansVerileri";
+        else if (id === 1) { // GÜNCELLENEN KISIM: Yahoo Zamanlayıcısı
+            fetchYahooData(); 
+            interval = setInterval(() => { fetchYahooData(); }, intervalMs);
+            updateInterval1 = interval;
+        } 
+        else if (id === 2) { // GÜNCELLENEN KISIM: Finans Zamanlayıcısı
+            const targetUrl = API_URL_2;
+            const targetSheet = "FinansVerileri";
             
             fetchData(targetUrl, targetSheet); 
             interval = setInterval(() => { fetchData(targetUrl, targetSheet); }, intervalMs);
-
-            if (id === 1) updateInterval1 = interval;
-            else updateInterval2 = interval;
+            updateInterval2 = interval;
         }
     } else {
         timerText.innerText = "Zamanlayıcı Kapalı";
